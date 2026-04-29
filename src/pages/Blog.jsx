@@ -9,9 +9,9 @@ export default function Blog() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch('https://dev.to/api/articles?per_page=20&tag=programming')
+    fetch('https://dev.to/api/articles?per_page=21&tag=programming')
       .then(res => res.json())
-      .then(data => { setPosts(data); setLoading(false) })
+      .then(data => { setPosts(data.slice(1)); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
 
