@@ -13,74 +13,69 @@ export default function BlogDetail() {
   useEffect(() => {
     fetch(`https://dev.to/api/articles/${id}`)
       .then(res => res.json())
-      .then(data => {
-        setPost(data)
-        setLoading(false)
-      })
+      .then(data => { setPost(data); setLoading(false) })
       .catch(() => setLoading(false))
   }, [id])
 
-  if (loading) return <div className="loading">Loading article...</div>
-  if (!post) return <div className="loading">Post not found</div>
+  if (loading) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 400 }}>
+      <div className="spinner-border es-spinner" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  )
+
+  if (!post) return <div className="text-center py-5 es-muted">Post not found</div>
 
   const readTime = post.reading_time_minutes || Math.ceil((post.body_html?.length || 1000) / 1500)
 
   return (
-    <div className="blog-detail">
-      <button className="back-link" onClick={() => navigate('/blog')}>
+    <div className="container py-4" style={{ maxWidth: 760 }}>
+      <button className="btn es-back-link mb-4 p-0" onClick={() => navigate('/blog')}>
         ← Back to Blog
       </button>
 
-      {/* Title */}
-      <h1 className="blog-detail-title">{post.title}</h1>
+      <h1 className="fw-bold mb-3 es-blog-title">{post.title}</h1>
 
-      {/* Meta row */}
-      <div className="blog-meta">
+      <div className="d-flex align-items-center gap-3 mb-3">
         <img
-          className="author-avatar"
+          className="es-avatar"
           src={post.user?.profile_image_90 || `https://ui-avatars.com/api/?name=${post.user?.name}&background=7c6ff7&color=fff`}
           alt={post.user?.name}
         />
-        <div className="blog-meta-info">
-          <span className="author-name">{post.user?.name || 'Anonymous'}</span>
-          <span className="meta-sep">·</span>
-          <span className="meta-date">
+        <div className="d-flex flex-wrap align-items-center gap-2 small es-muted">
+          <span className="fw-semibold" style={{ color: '#c9d1d9' }}>{post.user?.name || 'Anonymous'}</span>
+          <span>·</span>
+          <span>
             {new Date(post.published_at).toLocaleDateString('en-US', {
               year: 'numeric', month: 'long', day: 'numeric'
             })}
           </span>
-          <span className="meta-sep">·</span>
-          <span className="meta-read">{readTime} min read</span>
+          <span>·</span>
+          <span>{readTime} min read</span>
         </div>
       </div>
 
-      {/* Tags */}
       {post.tag_list && (
-        <div className="blog-tags">
+        <div className="d-flex flex-wrap gap-2 mb-4">
           {(Array.isArray(post.tag_list) ? post.tag_list : post.tag_list.split(', ')).map(tag => (
-            <span key={tag} className="blog-tag">#{tag}</span>
+            <span key={tag} className="es-tag">#{tag}</span>
           ))}
         </div>
       )}
 
-      {/* Cover image */}
       <img
-        className="blog-cover"
+        className="w-100 rounded mb-4 es-cover"
         src={post.cover_image || post.social_image || FALLBACK_IMG}
         alt={post.title}
       />
 
-      {/* Full article body */}
-      <div
-        className="blog-body"
-        dangerouslySetInnerHTML={{ __html: post.body_html }}
-      />
+      <div className="es-blog-body" dangerouslySetInnerHTML={{ __html: post.body_html }} />
 
-      {/* Reactions / stats footer */}
-      <div className="blog-stats">
+      <div className="d-flex flex-wrap align-items-center gap-4 mt-5 pt-4 border-top es-stats">
         <span>❤️ {post.public_reactions_count} reactions</span>
         <span>💬 {post.comments_count} comments</span>
-        <a href={post.url} target="_blank" rel="noopener noreferrer" className="read-original">
+        <a href={post.url} target="_blank" rel="noopener noreferrer" className="ms-auto es-original-link">
           Read on Dev.to ↗
         </a>
       </div>
